@@ -1,7 +1,6 @@
 import { BadRequestException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from '../users/user.model';
-import { Otp } from './otp.model';
 import { PasswordReset } from './password_reset.model';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';

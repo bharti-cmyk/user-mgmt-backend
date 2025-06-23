@@ -44,9 +44,6 @@ export class AuthController {
     @Post('login')
     async login(@Body() body: { email: string; password: string }) {
         const user = await this.authService.validateUser(body.email, body.password);
-        if (!user) throw new BadRequestException('Invalid credentials');
-
-        // TODO: Generate JWT access/refresh tokens
         return { message: 'Login successful', user };
     }
 

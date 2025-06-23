@@ -33,11 +33,6 @@ export class UserService {
     };
   }
 
-
-  async findById(id: number): Promise<User | null> {
-    return this.userModel.findByPk(id);
-  }
-
   async update(id: number, data: Partial<User>): Promise<User | null> {
     const user = await this.userModel.findByPk(id);
     if (!user) return null;

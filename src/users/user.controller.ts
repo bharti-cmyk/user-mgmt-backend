@@ -35,11 +35,6 @@ export class UserController {
     return this.userService.findPaginatedUsers(+page, +limit, search);
   }
 
-  @Get(':id')
-  async findById(@Param('id', ParseIntPipe) id: number): Promise<User | null> {
-    return this.userService.findById(id);
-  }
-
   @Put(':id')
   @Roles('admin')
   @UseInterceptors(
