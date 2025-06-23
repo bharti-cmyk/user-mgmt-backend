@@ -77,8 +77,6 @@ npm run test:cov
     <li>Role-Based Access Control (RBAC)</li>
     <li>Pagination & Search</li>
     <li>Image Upload (Avatar)</li>
-    <li>Global Response Interceptor (Coming Soon)</li>
-    <li>Global Error Handling (Coming Soon)</li>
   </ul>
 
   <h2>📦 Tech Stack</h2>
