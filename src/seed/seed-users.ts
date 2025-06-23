@@ -1,4 +1,4 @@
-import { User, UserCreationAttributes } from '../users/user.model';
+import { User, UserCreationAttributes } from '../users/models/user.model';
 import * as bcrypt from 'bcrypt';
 
 export const seedUsers = async () => {

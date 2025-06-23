@@ -2,9 +2,9 @@ import { Module, OnModuleInit } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Sequelize } from 'sequelize-typescript';
-import { User } from '../users/user.model';
-import { EmailVerification } from 'src/auth/email_verification.model';
-import { PasswordReset } from 'src/auth/password_reset.model';
+import { User } from '../users/models/user.model';
+import { EmailVerification } from '../auth/models/email_verification.model';
+import { PasswordReset } from '../auth/models/password_reset.model';
 
 @Module({
   imports: [

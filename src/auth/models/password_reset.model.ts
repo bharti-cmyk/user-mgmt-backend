@@ -5,7 +5,7 @@ import {
   DataType,
   ForeignKey,
 } from 'sequelize-typescript';
-import { User } from '../users/user.model';
+import { User } from '../../users/models/user.model';
 
 @Table({
   tableName: 'password_resets',

@@ -1,15 +1,19 @@
 import { BadRequestException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { User } from '../users/user.model';
-import { PasswordReset } from './password_reset.model';
+import { User } from '../users/models/user.model';
+import { PasswordReset } from './models/password_reset.model';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { Op } from 'sequelize';
 import { MailerService } from './mailer.service';
-import { EmailVerification } from './email_verification.model';
+import { EmailVerification } from './models/email_verification.model';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
+import { UserResponseDto } from 'src/users/dto/userResponse.dto';
+import { plainToInstance } from 'class-transformer';
+import { ForgotPasswordResponseDto } from './dto/forgotPasswordResponse.dto';
+import { RefreshTOkenResponse } from './dto/refreshTokenResponse.dto';
 
 @Injectable()
 export class AuthService {
@@ -79,7 +83,7 @@ export class AuthService {
     }
 
 
-    async resetPasswordRequest(email: string) {
+    async resetPasswordRequest(email: string): Promise<string | null> {
         const user = await this.userModel.findOne({ where: { email } });
         if (!user) return null;
 
@@ -92,7 +96,7 @@ export class AuthService {
             expires_at: expires,
         } as any);
 
-        const resetUrl = `http://localhost:3001/reset-password?token=${token}`;
+        const resetUrl = `${this.configService.get('BASE_URL')}/reset-password?token=${token}`;
 
         await this.mailerService.sendMail(
             user.email,
@@ -104,8 +108,13 @@ export class AuthService {
     }
 
 
-    async getUserByEmail(email: string) {
-        return this.userModel.findOne({ where: { email } });
+    async getUserByEmail(email: string): Promise<UserResponseDto | null> {
+        const user = this.userModel.findOne({ where: { email } });
+        if (!user) return null;
+    
+        return plainToInstance(UserResponseDto, user, {
+            enableImplicitConversion: true,
+        });
     }
 
     async sendVerificationLink(user: User) {
@@ -117,7 +126,7 @@ export class AuthService {
             expires_at: new Date(Date.now() + 10 * 60 * 1000),
         } as any);
 
-        const verifyUrl = `http://localhost:3001/verify-email?token=${token}`;
+        const verifyUrl = `${this.configService.get('BASE_URL')}/verify-email?token=${token}`;
 
         await this.mailerService.sendMail(
             user.email,
@@ -145,32 +154,12 @@ export class AuthService {
         return 'Email successfully verified';
     }
 
-    // async getRefreshToken(userId: number, refreshToken: string): Promise<{ accessToken: string }> {
-    //     const storedToken = await this.redisClient.get(`refresh:${userId}`);
-    //     if (!storedToken) throw new UnauthorizedException('No refresh token stored');
-
-    //     if (storedToken !== refreshToken) {
-    //         throw new UnauthorizedException('Invalid refresh token');
-    //     }
-
-    //     const decoded = await this.jwtService.verifyAsync(refreshToken, {
-    //         secret: this.configService.get('JWT_REFRESH_SECRET'),
-    //     });
-
-    //     const payload = { sub: decoded.sub, email: decoded.email, role: decoded.role };
-    //     const newAccessToken = this.jwtService.sign(payload, {
-    //         secret: this.configService.get('JWT_SECRET'),
-    //         expiresIn: '1h',
-    //     });
-    //     return { accessToken: newAccessToken };
-    // }
-
     async logout(userId: number): Promise<string> {
         await this.redisClient.del(`refresh:${userId}`);
         return 'Logged out successfully';
     }
 
-    async refreshAccessToken(refreshToken: string) {
+    async refreshAccessToken(refreshToken: string): Promise<RefreshTOkenResponse> {
         let payload = this.jwtService.verify(refreshToken, {
             secret: this.configService.get('JWT_REFRESH_SECRET'),
         });
@@ -207,8 +196,5 @@ export class AuthService {
         return { message: 'Password has been reset successfully' };
     }
 
-    async updateProfile(userId, body){
-        
-    }
 
 }

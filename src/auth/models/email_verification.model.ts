@@ -8,7 +8,7 @@ import {
   AutoIncrement,
   Default,
 } from 'sequelize-typescript';
-import { User } from '../users/user.model';
+import { User } from '../../users/models/user.model';
 
 @Table({
   tableName: 'email_verifications',
